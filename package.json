@@ -1,7 +1,6 @@
 {
   "name": "livegauge",
   "version": "0.0.1",
-  "type": "module",
   "description": "Real-time animated gauge chart for React",
   "keywords": [
     "react",
@@ -11,18 +10,17 @@
     "animation",
     "gauge"
   ],
-  "license": "MIT",
-  "author": "Breno Polanski",
+  "homepage": "https://github.com/brenopolanski/livegauge#readme",
+  "bugs": {
+    "url": "https://github.com/brenopolanski/livegauge/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/brenopolanski/livegauge.git"
   },
-  "homepage": "https://github.com/brenopolanski/livegauge#readme",
-  "bugs": "https://github.com/brenopolanski/livegauge/issues",
-  "sideEffects": false,
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "author": "Breno Polanski",
+  "type": "module",
   "exports": {
     ".": {
       "import": {
@@ -36,14 +34,13 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "engines": {
-    "node": ">=18"
-  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -52,13 +49,21 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm build"
   },
-  "peerDependencies": {
-    "react": ">=18"
+  "dependencies": {
+    "react": "^19.2.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
     "tsup": "^8.5.1",
     "typescript": "^5.0.0",
     "vitest": "^4.0.18"
-  }
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "module": "dist/index.js"
 }
