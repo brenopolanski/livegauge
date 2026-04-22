@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "portless livegauge vite"
+    "build": "vite build",
+    "dev": "portless livegauge vite",
+    "preview": "portless livegauge vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
