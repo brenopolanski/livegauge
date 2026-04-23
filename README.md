@@ -2,9 +2,9 @@
 
 Real-time animated gauge chart for React. Canvas-rendered, 60fps, zero CSS imports.
 
-<p align="center">
-  <video src="./.github/demo.mp4" width="600" controls></video>
-</p>
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/4c9d9e69-cf89-4d9d-b037-7684af8b7fcf" controls></video>
+</div>
 
 > _Inspired by the [Liveline](https://github.com/benjitaylor/liveline) project by [@benjitaylor](https://github.com/benjitaylor)._
 
