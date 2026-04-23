@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { createRoot } from 'react-dom/client'
-import { Gauge } from 'livegauge'
 import type { GaugeZone } from 'livegauge'
+import { Gauge } from 'livegauge'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createRoot } from 'react-dom/client'
 
 // --- Data generators ---
 
@@ -15,7 +16,9 @@ function randomWalk(prev: number, min: number, max: number, volatility: number):
 const PRESETS = {
   default: {
     label: 'Default',
-    min: 0, max: 100, color: '#3b82f6',
+    min: 0,
+    max: 100,
+    color: '#3b82f6',
     zones: undefined as GaugeZone[] | undefined,
     unit: '',
     format: (v: number) => v.toFixed(0),
@@ -24,7 +27,9 @@ const PRESETS = {
   },
   speedometer: {
     label: 'Speedometer',
-    min: 0, max: 220, color: '#3b82f6',
+    min: 0,
+    max: 220,
+    color: '#3b82f6',
     zones: [
       { from: 0, to: 80, color: '#22c55e' },
       { from: 80, to: 160, color: '#f59e0b' },
@@ -37,7 +42,9 @@ const PRESETS = {
   },
   temperature: {
     label: 'Temperature',
-    min: -20, max: 50, color: '#ef4444',
+    min: -20,
+    max: 50,
+    color: '#ef4444',
     zones: [
       { from: -20, to: 0, color: '#3b82f6' },
       { from: 0, to: 25, color: '#22c55e' },
@@ -51,7 +58,9 @@ const PRESETS = {
   },
   battery: {
     label: 'Battery',
-    min: 0, max: 100, color: '#22c55e',
+    min: 0,
+    max: 100,
+    color: '#22c55e',
     zones: [
       { from: 0, to: 20, color: '#ef4444' },
       { from: 20, to: 50, color: '#f59e0b' },
@@ -64,7 +73,9 @@ const PRESETS = {
   },
   crypto: {
     label: 'Fear & Greed',
-    min: 0, max: 100, color: '#f7931a',
+    min: 0,
+    max: 100,
+    color: '#f7931a',
     zones: [
       { from: 0, to: 25, color: '#ef4444' },
       { from: 25, to: 45, color: '#f59e0b' },
@@ -116,10 +127,11 @@ function Demo() {
 
     intervalRef.current = window.setInterval(() => {
       const c = PRESETS[presetRef.current]
-      setValue(prev => randomWalk(prev, c.min, c.max, c.volatility))
+      setValue((prev) => randomWalk(prev, c.min, c.max, c.volatility))
     }, 200)
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startLive is a stable ref callback, intentional omission
   useEffect(() => {
     if (scenario === 'loading') {
       setLoading(true)
@@ -140,10 +152,10 @@ function Demo() {
     }
     startLive()
     return () => clearInterval(intervalRef.current)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenario])
 
   // Reset value on preset change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startLive/scenario are stable refs, intentional omission
   useEffect(() => {
     if (scenario === 'empty') {
       setValue(0)
@@ -155,7 +167,6 @@ function Demo() {
       clearInterval(intervalRef.current)
       startLive()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preset])
 
   const isDark = theme === 'dark'
@@ -163,58 +174,100 @@ function Demo() {
   const pageBg = isDark ? '#111' : '#f5f5f5'
 
   return (
-    <div style={{
-      padding: 32, maxWidth: 960, margin: '0 auto',
-      color: isDark ? '#fff' : '#111',
-      background: pageBg,
-      minHeight: '100vh',
-      transition: 'background 0.3s, color 0.3s',
-      '--fg-02': `rgba(${fgBase},0.02)`,
-      '--fg-06': `rgba(${fgBase},0.06)`,
-      '--fg-08': `rgba(${fgBase},0.08)`,
-      '--fg-20': `rgba(${fgBase},0.2)`,
-      '--fg-25': `rgba(${fgBase},0.25)`,
-      '--fg-30': `rgba(${fgBase},0.3)`,
-      '--fg-35': `rgba(${fgBase},0.35)`,
-      '--fg-45': `rgba(${fgBase},0.45)`,
-    } as React.CSSProperties}>
-      <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>
-        Livegauge Dev
-      </h1>
-      <p style={{ fontSize: 12, color: 'var(--fg-30)', marginBottom: 20 }}>Stress-test playground</p>
+    <div
+      style={
+        {
+          padding: 32,
+          maxWidth: 960,
+          margin: '0 auto',
+          color: isDark ? '#fff' : '#111',
+          background: pageBg,
+          minHeight: '100vh',
+          transition: 'background 0.3s, color 0.3s',
+          '--fg-02': `rgba(${fgBase},0.02)`,
+          '--fg-06': `rgba(${fgBase},0.06)`,
+          '--fg-08': `rgba(${fgBase},0.08)`,
+          '--fg-20': `rgba(${fgBase},0.2)`,
+          '--fg-25': `rgba(${fgBase},0.25)`,
+          '--fg-30': `rgba(${fgBase},0.3)`,
+          '--fg-35': `rgba(${fgBase},0.35)`,
+          '--fg-45': `rgba(${fgBase},0.45)`,
+        } as React.CSSProperties
+      }
+    >
+      <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Livegauge Dev</h1>
+      <p style={{ fontSize: 12, color: 'var(--fg-30)', marginBottom: 20 }}>
+        Stress-test playground
+      </p>
 
       {/* Preset */}
       <Section label="Preset">
-        {(Object.keys(PRESETS) as PresetKey[]).map(k => (
-          <Btn key={k} active={preset === k} onClick={() => setPreset(k)}>{PRESETS[k].label}</Btn>
+        {(Object.keys(PRESETS) as PresetKey[]).map((k) => (
+          <Btn key={k} active={preset === k} onClick={() => setPreset(k)}>
+            {PRESETS[k].label}
+          </Btn>
         ))}
       </Section>
 
       {/* State */}
       <Section label="State">
-        <Btn active={scenario === 'loading'} onClick={() => setScenario('loading')}>Loading &rarr; Live</Btn>
-        <Btn active={scenario === 'loading-hold'} onClick={() => setScenario('loading-hold')}>Loading</Btn>
-        <Btn active={scenario === 'live'} onClick={() => setScenario('live')}>Live</Btn>
-        <Btn active={scenario === 'empty'} onClick={() => setScenario('empty')}>Empty</Btn>
+        <Btn active={scenario === 'loading'} onClick={() => setScenario('loading')}>
+          Loading &rarr; Live
+        </Btn>
+        <Btn active={scenario === 'loading-hold'} onClick={() => setScenario('loading-hold')}>
+          Loading
+        </Btn>
+        <Btn active={scenario === 'live'} onClick={() => setScenario('live')}>
+          Live
+        </Btn>
+        <Btn active={scenario === 'empty'} onClick={() => setScenario('empty')}>
+          Empty
+        </Btn>
       </Section>
 
       {/* Features */}
       <Section label="Features">
-        <Btn active={theme === 'dark'} onClick={() => setTheme('dark')}>Dark</Btn>
-        <Btn active={theme === 'light'} onClick={() => setTheme('light')}>Light</Btn>
+        <Btn active={theme === 'dark'} onClick={() => setTheme('dark')}>
+          Dark
+        </Btn>
+        <Btn active={theme === 'light'} onClick={() => setTheme('light')}>
+          Light
+        </Btn>
         <Sep />
-        <Btn active={pointer === 'needle'} onClick={() => setPointer('needle')}>Needle</Btn>
-        <Btn active={pointer === 'circle'} onClick={() => setPointer('circle')}>Circle</Btn>
+        <Btn active={pointer === 'needle'} onClick={() => setPointer('needle')}>
+          Needle
+        </Btn>
+        <Btn active={pointer === 'circle'} onClick={() => setPointer('circle')}>
+          Circle
+        </Btn>
         <Sep />
-        <Toggle on={ticks} onToggle={setTicks}>Ticks</Toggle>
-        <Toggle on={tickLabels} onToggle={setTickLabels}>Tick Labels</Toggle>
-        <Toggle on={showZones} onToggle={setShowZones}>Zones</Toggle>
-        <Toggle on={showValue} onToggle={setShowValue}>Value</Toggle>
-        <Toggle on={dot} onToggle={setDot}>Dot</Toggle>
-        <Toggle on={pulse} onToggle={setPulse}>Pulse</Toggle>
-        <Toggle on={momentum} onToggle={setMomentum}>Momentum</Toggle>
-        <Toggle on={degen} onToggle={setDegen}>Degen</Toggle>
-        <Toggle on={tooltipOn} onToggle={setTooltipOn}>Tooltip</Toggle>
+        <Toggle on={ticks} onToggle={setTicks}>
+          Ticks
+        </Toggle>
+        <Toggle on={tickLabels} onToggle={setTickLabels}>
+          Tick Labels
+        </Toggle>
+        <Toggle on={showZones} onToggle={setShowZones}>
+          Zones
+        </Toggle>
+        <Toggle on={showValue} onToggle={setShowValue}>
+          Value
+        </Toggle>
+        <Toggle on={dot} onToggle={setDot}>
+          Dot
+        </Toggle>
+        <Toggle on={pulse} onToggle={setPulse}>
+          Pulse
+        </Toggle>
+        <Toggle on={momentum} onToggle={setMomentum}>
+          Momentum
+        </Toggle>
+        <Toggle on={degen} onToggle={setDegen}>
+          Degen
+        </Toggle>
+        <Toggle on={tooltipOn} onToggle={setTooltipOn}>
+          Tooltip
+        </Toggle>
       </Section>
 
       {/* Manual value control */}
@@ -225,27 +278,37 @@ function Demo() {
           max={cfg.max}
           step={(cfg.max - cfg.min) / 200}
           value={value}
-          onChange={e => {
+          onChange={(e) => {
             clearInterval(intervalRef.current)
             setValue(Number(e.target.value))
           }}
           style={{ width: 200, accentColor: cfg.color }}
         />
-        <span style={{ fontSize: 11, fontFamily: '"SF Mono", Menlo, monospace', color: 'var(--fg-35)', marginLeft: 8 }}>
-          {cfg.format(value)}{cfg.unit ? ` ${cfg.unit}` : ''}
+        <span
+          style={{
+            fontSize: 11,
+            fontFamily: '"SF Mono", Menlo, monospace',
+            color: 'var(--fg-35)',
+            marginLeft: 8,
+          }}
+        >
+          {cfg.format(value)}
+          {cfg.unit ? ` ${cfg.unit}` : ''}
         </span>
       </Section>
 
       {/* Main gauge */}
-      <div style={{
-        height: 280,
-        background: 'var(--fg-02)',
-        borderRadius: 12,
-        border: '1px solid var(--fg-06)',
-        padding: 16,
-        overflow: 'hidden',
-        marginTop: 16,
-      }}>
+      <div
+        style={{
+          height: 280,
+          background: 'var(--fg-02)',
+          borderRadius: 12,
+          border: '1px solid var(--fg-06)',
+          padding: 16,
+          overflow: 'hidden',
+          marginTop: 16,
+        }}
+      >
         <Gauge
           value={value}
           min={cfg.min}
@@ -269,26 +332,44 @@ function Demo() {
       </div>
 
       {/* Size variants */}
-      <p style={{ fontSize: 12, color: 'var(--fg-30)', marginTop: 24, marginBottom: 8 }}>Size variants</p>
+      <p
+        style={{
+          fontSize: 12,
+          color: 'var(--fg-30)',
+          marginTop: 24,
+          marginBottom: 8,
+        }}
+      >
+        Size variants
+      </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { w: 300, h: 200, label: '300x200' },
           { w: 220, h: 160, label: '220x160' },
           { w: 160, h: 120, label: '160x120' },
           { w: 120, h: 100, label: '120x100' },
-        ].map(size => (
+        ].map((size) => (
           <div key={size.label}>
-            <span style={{ fontSize: 10, color: 'var(--fg-25)', display: 'block', marginBottom: 4 }}>
+            <span
+              style={{
+                fontSize: 10,
+                color: 'var(--fg-25)',
+                display: 'block',
+                marginBottom: 4,
+              }}
+            >
               {size.label}
             </span>
-            <div style={{
-              width: size.w,
-              height: size.h,
-              background: 'var(--fg-02)',
-              borderRadius: 8,
-              border: '1px solid var(--fg-06)',
-              overflow: 'hidden',
-            }}>
+            <div
+              style={{
+                width: size.w,
+                height: size.h,
+                background: 'var(--fg-02)',
+                borderRadius: 8,
+                border: '1px solid var(--fg-06)',
+                overflow: 'hidden',
+              }}
+            >
               <Gauge
                 value={value}
                 min={cfg.min}
@@ -313,23 +394,41 @@ function Demo() {
       </div>
 
       {/* Gallery: all presets side by side */}
-      <p style={{ fontSize: 12, color: 'var(--fg-30)', marginTop: 24, marginBottom: 8 }}>All presets</p>
+      <p
+        style={{
+          fontSize: 12,
+          color: 'var(--fg-30)',
+          marginTop: 24,
+          marginBottom: 8,
+        }}
+      >
+        All presets
+      </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        {(Object.keys(PRESETS) as PresetKey[]).map(k => {
+        {(Object.keys(PRESETS) as PresetKey[]).map((k) => {
           const p = PRESETS[k]
           return (
             <div key={k}>
-              <span style={{ fontSize: 10, color: 'var(--fg-25)', display: 'block', marginBottom: 4 }}>
+              <span
+                style={{
+                  fontSize: 10,
+                  color: 'var(--fg-25)',
+                  display: 'block',
+                  marginBottom: 4,
+                }}
+              >
                 {p.label}
               </span>
-              <div style={{
-                width: 220,
-                height: 160,
-                background: 'var(--fg-02)',
-                borderRadius: 8,
-                border: '1px solid var(--fg-06)',
-                overflow: 'hidden',
-              }}>
+              <div
+                style={{
+                  width: 220,
+                  height: 160,
+                  background: 'var(--fg-02)',
+                  borderRadius: 8,
+                  border: '1px solid var(--fg-06)',
+                  overflow: 'hidden',
+                }}
+              >
                 <Gauge
                   value={k === preset ? value : p.startValue}
                   min={p.min}
@@ -352,18 +451,25 @@ function Demo() {
       </div>
 
       {/* Status bar */}
-      <div style={{
-        marginTop: 16,
-        fontSize: 11,
-        fontFamily: '"SF Mono", Menlo, monospace',
-        color: 'var(--fg-25)',
-        display: 'flex',
-        gap: 16,
-        flexWrap: 'wrap',
-      }}>
+      <div
+        style={{
+          marginTop: 16,
+          fontSize: 11,
+          fontFamily: '"SF Mono", Menlo, monospace',
+          color: 'var(--fg-25)',
+          display: 'flex',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}
+      >
         <span>preset: {preset}</span>
-        <span>value: {cfg.format(value)}{cfg.unit}</span>
-        <span>range: {cfg.min}–{cfg.max}</span>
+        <span>
+          value: {cfg.format(value)}
+          {cfg.unit}
+        </span>
+        <span>
+          range: {cfg.min}–{cfg.max}
+        </span>
         <span>pointer: {pointer}</span>
         <span>loading: {String(loading)}</span>
         <span>theme: {theme}</span>
@@ -376,8 +482,25 @@ function Demo() {
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
-      <span style={{ fontSize: 10, color: 'var(--fg-30)', width: 56, flexShrink: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 8,
+        flexWrap: 'wrap',
+      }}
+    >
+      <span
+        style={{
+          fontSize: 10,
+          color: 'var(--fg-30)',
+          width: 56,
+          flexShrink: 0,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}
+      >
         {label}
       </span>
       {children}
@@ -386,12 +509,30 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 }
 
 function Sep() {
-  return <div style={{ width: 1, height: 16, background: 'var(--fg-08)', margin: '0 2px' }} />
+  return (
+    <div
+      style={{
+        width: 1,
+        height: 16,
+        background: 'var(--fg-08)',
+        margin: '0 2px',
+      }}
+    />
+  )
 }
 
-function Toggle({ on, onToggle, children }: { on: boolean; onToggle: (v: boolean) => void; children: React.ReactNode }) {
+function Toggle({
+  on,
+  onToggle,
+  children,
+}: {
+  on: boolean
+  onToggle: (v: boolean) => void
+  children: React.ReactNode
+}) {
   return (
     <button
+      type="button"
       onClick={() => onToggle(!on)}
       style={{
         fontSize: 11,
@@ -411,13 +552,18 @@ function Toggle({ on, onToggle, children }: { on: boolean; onToggle: (v: boolean
   )
 }
 
-function Btn({ children, active, onClick }: {
+function Btn({
+  children,
+  active,
+  onClick,
+}: {
   children: React.ReactNode
   active: boolean
   onClick: () => void
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       style={{
         fontSize: 11,
@@ -437,4 +583,7 @@ function Btn({ children, active, onClick }: {
   )
 }
 
-createRoot(document.getElementById('root')!).render(<Demo />)
+const rootEl = document.getElementById('root')
+if (rootEl) {
+  createRoot(rootEl).render(<Demo />)
+}

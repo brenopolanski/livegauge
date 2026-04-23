@@ -1,4 +1,4 @@
-import type { GaugePalette, GaugeLayout } from '../types'
+import type { GaugeLayout, GaugePalette } from '@/types'
 
 const SWEEP_SPEED = 0.0012
 const SWEEP_ARC_LEN = Math.PI * 0.4
@@ -32,9 +32,7 @@ export function drawLoading(
 
   // Sweep arc
   const sweepT = (now_ms * SWEEP_SPEED) % 1
-  const eased = sweepT < 0.5
-    ? 2 * sweepT * sweepT
-    : 1 - Math.pow(-2 * sweepT + 2, 2) / 2
+  const eased = sweepT < 0.5 ? 2 * sweepT * sweepT : 1 - (-2 * sweepT + 2) ** 2 / 2
 
   const sweepCenter = layout.startAngle + eased * totalAngle
   const halfLen = SWEEP_ARC_LEN / 2

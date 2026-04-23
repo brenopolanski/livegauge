@@ -1,4 +1,4 @@
-import type { GaugePalette, GaugeLayout, Momentum } from '../types'
+import type { GaugeLayout, GaugePalette, Momentum } from '@/types'
 
 /** Draw the gauge needle pointing at the given angle. */
 export function drawNeedle(
@@ -18,9 +18,8 @@ export function drawNeedle(
 
   // Momentum glow behind the needle (only when dot is visible)
   if (showDot && momentumGlowAlpha > 0.01) {
-    const glowColor = momentum === 'up' ? palette.glowUp
-      : momentum === 'down' ? palette.glowDown
-      : palette.glowFlat
+    const glowColor =
+      momentum === 'up' ? palette.glowUp : momentum === 'down' ? palette.glowDown : palette.glowFlat
     ctx.save()
     ctx.globalAlpha = momentumGlowAlpha * 0.6
     ctx.shadowColor = glowColor
@@ -106,9 +105,8 @@ export function drawCirclePointer(
   }
 
   if (momentumGlowAlpha > 0.01) {
-    const glowColor = momentum === 'up' ? palette.glowUp
-      : momentum === 'down' ? palette.glowDown
-      : palette.glowFlat
+    const glowColor =
+      momentum === 'up' ? palette.glowUp : momentum === 'down' ? palette.glowDown : palette.glowFlat
     ctx.save()
     ctx.globalAlpha = momentumGlowAlpha * 0.5
     ctx.shadowColor = glowColor

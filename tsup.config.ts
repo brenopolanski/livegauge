@@ -7,5 +7,7 @@ export default defineConfig({
   external: ['react'],
   splitting: false,
   clean: true,
-  jsx: 'automatic',
+  esbuildOptions(options) {
+    options.jsx = 'automatic'
+  },
 })

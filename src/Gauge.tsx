@@ -1,6 +1,6 @@
-import { useRef, useMemo, useCallback } from 'react'
-import type { GaugeProps, Momentum, DegenOptions } from './types'
+import { useCallback, useMemo, useRef } from 'react'
 import { resolveTheme } from './theme'
+import type { DegenOptions, GaugeProps, Momentum } from './types'
 import { useGaugeEngine } from './useGaugeEngine'
 import { useTooltip } from './useTooltip'
 
@@ -49,19 +49,20 @@ export function Gauge({
 
   // Resolve momentum prop: boolean enables auto-detect, string overrides
   const showMomentum = momentum !== false
-  const momentumOverride: Momentum | undefined =
-    typeof momentum === 'string' ? momentum : undefined
+  const momentumOverride: Momentum | undefined = typeof momentum === 'string' ? momentum : undefined
 
   // Degen mode: explicit prop wins
   const degenEnabled = degenProp != null && degenProp !== false
   const degenOptions: DegenOptions | undefined = degenEnabled
-    ? (typeof degenProp === 'object' ? degenProp : {})
+    ? typeof degenProp === 'object'
+      ? degenProp
+      : {}
     : undefined
 
   const tickCount = typeof ticks === 'number' ? ticks : 0
   const showTicks = ticks !== false
 
-  const safeValue = (value != null && Number.isFinite(value)) ? value : 0
+  const safeValue = value != null && Number.isFinite(value) ? value : 0
 
   const layoutRef = useGaugeEngine(canvasRef, containerRef, {
     value: safeValue,
@@ -87,25 +88,40 @@ export function Gauge({
     label,
   })
 
-  const posToValue = useCallback((cssX: number, cssY: number): number | null => {
-    const lay = layoutRef.current
-    if (!lay) return null
-    const dx = cssX - lay.cx
-    const dy = cssY - lay.cy
-    const dist = Math.sqrt(dx * dx + dy * dy)
-    const halfArc = lay.arcWidth / 2
-    if (dist < lay.radius - halfArc - 14 || dist > lay.radius + halfArc + 14) return null
-    let angle = Math.atan2(dy, dx)
-    if (angle < 0) angle += Math.PI * 2
-    const totalAngle = lay.endAngle - lay.startAngle
-    let normStart = lay.startAngle % (Math.PI * 2)
-    if (normStart < 0) normStart += Math.PI * 2
-    let rel = angle - normStart
-    if (rel < -0.1) rel += Math.PI * 2
-    if (rel < -0.05 || rel > totalAngle + 0.05) return null
-    const t = Math.max(0, Math.min(1, rel / totalAngle))
-    return min + t * (max - min)
-  }, [layoutRef, min, max])
+  const posToValue = useCallback(
+    (cssX: number, cssY: number): number | null => {
+      const lay = layoutRef.current
+      if (!lay) {
+        return null
+      }
+      const dx = cssX - lay.cx
+      const dy = cssY - lay.cy
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const halfArc = lay.arcWidth / 2
+      if (dist < lay.radius - halfArc - 14 || dist > lay.radius + halfArc + 14) {
+        return null
+      }
+      let angle = Math.atan2(dy, dx)
+      if (angle < 0) {
+        angle += Math.PI * 2
+      }
+      const totalAngle = lay.endAngle - lay.startAngle
+      let normStart = lay.startAngle % (Math.PI * 2)
+      if (normStart < 0) {
+        normStart += Math.PI * 2
+      }
+      let rel = angle - normStart
+      if (rel < -0.1) {
+        rel += Math.PI * 2
+      }
+      if (rel < -0.05 || rel > totalAngle + 0.05) {
+        return null
+      }
+      const t = Math.max(0, Math.min(1, rel / totalAngle))
+      return min + t * (max - min)
+    },
+    [layoutRef, min, max],
+  )
 
   useTooltip({
     enabled: tooltip,
@@ -127,10 +143,7 @@ export function Gauge({
         ...style,
       }}
     >
-      <canvas
-        ref={canvasRef}
-        style={{ display: 'block', cursor: tooltip ? 'crosshair' : undefined }}
-      />
+      <canvas ref={canvasRef} style={{ display: 'block' }} />
       {tooltip && (
         <div
           ref={tooltipRef}
@@ -154,17 +167,19 @@ export function Gauge({
         />
       )}
       {showValue && (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 4,
-          pointerEvents: 'none',
-          transition: 'opacity 0.3s',
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 4,
+            pointerEvents: 'none',
+            transition: 'opacity 0.3s',
+          }}
+        >
           <span
             ref={valueDisplayRef}
             style={{
@@ -177,12 +192,14 @@ export function Gauge({
             }}
           />
           {label && (
-            <span style={{
-              fontSize: 11,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
-              marginTop: 2,
-            }}>
+            <span
+              style={{
+                fontSize: 11,
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)',
+                marginTop: 2,
+              }}
+            >
               {label}
             </span>
           )}

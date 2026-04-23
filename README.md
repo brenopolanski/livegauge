@@ -141,8 +141,6 @@ The component fills its parent container. Set a width and height on the parent.
 <Gauge value={0} loading={isConnecting} color="#8b5cf6" />
 ```
 
----
-
 ## How It Works
 
 - **Canvas rendering** — single `<canvas>` element, no DOM nodes per data point

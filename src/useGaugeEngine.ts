@@ -1,9 +1,9 @@
-import { useRef, useEffect, useCallback } from 'react'
-import type { GaugePalette, GaugeLayout, GaugeZone, Momentum, DegenOptions } from './types'
-import { lerp } from './math/lerp'
-import { getDpr, applyDpr } from './canvas/dpr'
-import { drawGaugeFrame, createShakeState, autoTickCount } from './draw'
+import { useCallback, useEffect, useRef } from 'react'
+import { applyDpr, getDpr } from './canvas/dpr'
+import { autoTickCount, createShakeState, drawGaugeFrame } from './draw'
 import { createParticleState } from './draw/particles'
+import { lerp } from './math/lerp'
+import type { DegenOptions, GaugeLayout, GaugePalette, GaugeZone, Momentum } from './types'
 
 const MAX_DELTA_MS = 50
 const CHART_REVEAL_SPEED = 0.14
@@ -69,11 +69,15 @@ export function useGaugeEngine(
   // ResizeObserver
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container) {
+      return
+    }
 
     const ro = new ResizeObserver((entries) => {
       const entry = entries[0]
-      if (!entry) return
+      if (!entry) {
+        return
+      }
       const { width, height } = entry.contentRect
       sizeRef.current = { w: width, h: height }
     })
@@ -89,12 +93,15 @@ export function useGaugeEngine(
   useEffect(() => {
     const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
     reducedMotionRef.current = mql.matches
-    const onChange = (e: MediaQueryListEvent) => { reducedMotionRef.current = e.matches }
+    const onChange = (e: MediaQueryListEvent) => {
+      reducedMotionRef.current = e.matches
+    }
     mql.addEventListener('change', onChange)
     return () => mql.removeEventListener('change', onChange)
   }, [])
 
   // Visibility change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: draw is a stable ref callback, intentional omission
   useEffect(() => {
     const onVisibility = () => {
       if (!document.hidden && !rafRef.current) {
@@ -103,7 +110,6 @@ export function useGaugeEngine(
     }
     document.addEventListener('visibilitychange', onVisibility)
     return () => document.removeEventListener('visibilitychange', onVisibility)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const draw = useCallback(() => {
@@ -191,9 +197,14 @@ export function useGaugeEngine(
     }
 
     const layout: GaugeLayout = {
-      w, h, cx, cy, radius,
+      w,
+      h,
+      cx,
+      cy,
+      radius,
       arcWidth,
-      startAngle, endAngle,
+      startAngle,
+      endAngle,
       valueToAngle,
     }
     layoutRef.current = layout
@@ -214,11 +225,16 @@ export function useGaugeEngine(
       if (cfg.momentumOverride) {
         momentum = cfg.momentumOverride
       } else {
-        const points = history.map(h => ({ time: h.time, value: h.value }))
-        let min = Infinity, max = -Infinity
+        const points = history.map((h) => ({ time: h.time, value: h.value }))
+        let min = Infinity,
+          max = -Infinity
         for (const p of points) {
-          if (p.value < min) min = p.value
-          if (p.value > max) max = p.value
+          if (p.value < min) {
+            min = p.value
+          }
+          if (p.value > max) {
+            max = p.value
+          }
         }
         const pRange = max - min
         if (pRange > 0) {
@@ -227,16 +243,31 @@ export function useGaugeEngine(
           const last = points[points.length - 1].value
           const delta = last - first
           const threshold = pRange * 0.12
-          if (delta > threshold) momentum = 'up'
-          else if (delta < -threshold) momentum = 'down'
+          if (delta > threshold) {
+            momentum = 'up'
+          } else if (delta < -threshold) {
+            momentum = 'down'
+          }
         }
       }
     }
     lastMomentumRef.current = momentum
 
     // Swing magnitude for particles
-    const targetSwing = momentum !== 'flat' ? Math.min(1, Math.abs(cfg.value - (history[Math.max(0, history.length - 5)]?.value ?? cfg.value)) / (range * 0.1 || 1)) : 0
-    swingMagnitudeRef.current = lerp(swingMagnitudeRef.current, targetSwing, SWING_MAGNITUDE_SPEED, dt)
+    const targetSwing =
+      momentum !== 'flat'
+        ? Math.min(
+            1,
+            Math.abs(cfg.value - (history[Math.max(0, history.length - 5)]?.value ?? cfg.value)) /
+              (range * 0.1 || 1),
+          )
+        : 0
+    swingMagnitudeRef.current = lerp(
+      swingMagnitudeRef.current,
+      targetSwing,
+      SWING_MAGNITUDE_SPEED,
+      dt,
+    )
 
     // Momentum glow
     const glowTarget = momentum !== 'flat' ? 1 : 0
@@ -245,19 +276,24 @@ export function useGaugeEngine(
     // Chart reveal
     const hasData = !cfg.loading
     const revealTarget = hasData ? 1 : 0
-    const revealSpeed = noMotion ? 1
-      : revealTarget > chartRevealRef.current ? CHART_REVEAL_SPEED_FWD : CHART_REVEAL_SPEED
+    const revealSpeed = noMotion
+      ? 1
+      : revealTarget > chartRevealRef.current
+        ? CHART_REVEAL_SPEED_FWD
+        : CHART_REVEAL_SPEED
     chartRevealRef.current = lerp(chartRevealRef.current, revealTarget, revealSpeed, dt)
-    if (chartRevealRef.current > 0.999) chartRevealRef.current = 1
-    if (chartRevealRef.current < 0.001) chartRevealRef.current = 0
+    if (chartRevealRef.current > 0.999) {
+      chartRevealRef.current = 1
+    }
+    if (chartRevealRef.current < 0.001) {
+      chartRevealRef.current = 0
+    }
     const chartReveal = chartRevealRef.current
 
     const valueAngle = valueToAngle(smoothValue)
 
     // Tick count
-    const tickCount = cfg.tickCount > 0
-      ? cfg.tickCount
-      : autoTickCount(radius)
+    const tickCount = cfg.tickCount > 0 ? cfg.tickCount : autoTickCount(radius)
 
     // Draw
     drawGaugeFrame(ctx, layout, cfg.palette, {
@@ -290,14 +326,21 @@ export function useGaugeEngine(
     if (valEl) {
       const wrapper = valEl.parentElement
       if (cfg.loading) {
-        if (wrapper) wrapper.style.opacity = '0'
+        if (wrapper) {
+          wrapper.style.opacity = '0'
+        }
       } else {
-        if (wrapper) wrapper.style.opacity = '1'
+        if (wrapper) {
+          wrapper.style.opacity = '1'
+        }
         valEl.textContent = cfg.formatValue(smoothValue)
         if (cfg.showMomentum) {
           const mc = momentum === 'up' ? '#22c55e' : momentum === 'down' ? '#ef4444' : ''
-          if (mc) valEl.style.color = mc
-          else valEl.style.removeProperty('color')
+          if (mc) {
+            valEl.style.color = mc
+          } else {
+            valEl.style.removeProperty('color')
+          }
         } else {
           valEl.style.removeProperty('color')
         }

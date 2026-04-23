@@ -1,10 +1,16 @@
-import type { GaugePalette, GaugeLayout } from '../types'
+import type { GaugeLayout, GaugePalette } from '@/types'
 
 /** Compute a nice tick count based on the arc radius. */
 export function autoTickCount(radius: number): number {
-  if (radius < 60) return 5
-  if (radius < 100) return 7
-  if (radius < 160) return 9
+  if (radius < 60) {
+    return 5
+  }
+  if (radius < 100) {
+    return 7
+  }
+  if (radius < 160) {
+    return 9
+  }
   return 11
 }
 

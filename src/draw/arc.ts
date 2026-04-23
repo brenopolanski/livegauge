@@ -1,4 +1,4 @@
-import type { GaugePalette, GaugeLayout, GaugeZone } from '../types'
+import type { GaugeLayout, GaugePalette, GaugeZone } from '@/types'
 
 /** Draw the background arc track (the grey ring). */
 export function drawArcTrack(
@@ -24,13 +24,15 @@ export function drawArcZones(
   const { cx, cy, radius } = layout
   const outerR = radius + arcWidth
   const innerR = Math.max(0, radius - arcWidth)
-  const capAngle = (arcWidth / 2) / radius + 0.02
+  const capAngle = arcWidth / 2 / radius + 0.02
 
   for (let i = 0; i < zones.length; i++) {
     const zone = zones[i]
     const startA = layout.valueToAngle(zone.from)
     const endA = layout.valueToAngle(zone.to)
-    if (Math.abs(endA - startA) < 0.001) continue
+    if (Math.abs(endA - startA) < 0.001) {
+      continue
+    }
 
     const isFirst = i === 0
     const isLast = i === zones.length - 1
@@ -71,7 +73,9 @@ export function drawArcFill(
   valueAngle: number,
 ): void {
   const span = Math.abs(valueAngle - layout.startAngle)
-  if (span < 0.002) return
+  if (span < 0.002) {
+    return
+  }
 
   ctx.beginPath()
   ctx.arc(layout.cx, layout.cy, layout.radius, layout.startAngle, valueAngle, false)

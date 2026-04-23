@@ -1,15 +1,19 @@
-import type { ThemeMode, GaugePalette } from './types'
+import type { GaugePalette, ThemeMode } from './types'
 
 /** Parse any CSS color string to [r, g, b]. Handles hex (#rgb, #rrggbb), rgb(), rgba(). */
 export function parseColorRgb(color: string): [number, number, number] {
   const hex = color.match(/^#([0-9a-f]{3,8})$/i)
   if (hex) {
     let h = hex[1]
-    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2]
-    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]
+    if (h.length === 3) {
+      h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]
+    }
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
   }
   const rgb = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/)
-  if (rgb) return [+rgb[1], +rgb[2], +rgb[3]]
+  if (rgb) {
+    return [+rgb[1], +rgb[2], +rgb[3]]
+  }
   return [128, 128, 128]
 }
 

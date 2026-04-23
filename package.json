@@ -1,6 +1,6 @@
 {
   "name": "livegauge",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Real-time animated gauge chart for React",
   "keywords": [
     "react",
@@ -19,7 +19,11 @@
     "url": "git+https://github.com/brenopolanski/livegauge.git"
   },
   "license": "MIT",
-  "author": "Breno Polanski",
+  "author": {
+    "name": "Breno Polanski",
+    "email": "breno.polanski@gmail.com",
+    "url": "https://github.com/brenopolanski"
+  },
   "type": "module",
   "exports": {
     ".": {
@@ -34,36 +38,44 @@
     },
     "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup",
+    "check": "biome check",
+    "ci": "biome ci",
+    "clean": "/bin/bash scripts/clean.sh",
     "dev": "tsup --watch",
+    "format": "biome check --write",
+    "prepare": "husky",
+    "prepublishOnly": "bun run build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm build"
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^19.2.4"
   },
-  "devDependencies": {
-    "@types/react": "^18.0.0",
-    "tsup": "^8.5.1",
-    "typescript": "^5.0.0",
-    "vitest": "^4.0.18"
-  },
   "peerDependencies": {
     "react": ">=18"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "sideEffects": false,
-  "module": "dist/index.js"
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
+    "@types/react": "^18.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.18"
+  }
 }

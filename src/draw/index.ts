@@ -1,10 +1,10 @@
-import type { GaugePalette, GaugeLayout, GaugeZone, Momentum, DegenOptions } from '../types'
-import { drawArcTrack, drawArcZones, drawArcFill, drawMinMaxLabels } from './arc'
-import { drawNeedle, drawCirclePointer } from './needle'
-import { drawTicks, autoTickCount } from './ticks'
+import type { DegenOptions, GaugeLayout, GaugePalette, GaugeZone, Momentum } from '@/types'
+import { drawArcFill, drawArcTrack, drawArcZones, drawMinMaxLabels } from './arc'
 import { drawDot } from './dot'
 import { drawLoading } from './loading'
-import { drawParticles, spawnOnSwing, type ParticleState } from './particles'
+import { drawCirclePointer, drawNeedle } from './needle'
+import { drawParticles, type ParticleState, spawnOnSwing } from './particles'
+import { autoTickCount, drawTicks } from './ticks'
 
 const SHAKE_DECAY_RATE = 0.002
 const SHAKE_MIN_AMPLITUDE = 0.2
@@ -70,9 +70,11 @@ export function drawGaugeFrame(
     ctx.translate(shakeX, shakeY)
   }
   if (shake) {
-    const decayRate = Math.pow(SHAKE_DECAY_RATE, opts.dt / 1000)
+    const decayRate = SHAKE_DECAY_RATE ** (opts.dt / 1000)
     shake.amplitude *= decayRate
-    if (shake.amplitude < SHAKE_MIN_AMPLITUDE) shake.amplitude = 0
+    if (shake.amplitude < SHAKE_MIN_AMPLITUDE) {
+      shake.amplitude = 0
+    }
   }
 
   // Smoothstep helper
@@ -114,9 +116,13 @@ export function drawGaugeFrame(
       ctx.save()
       ctx.globalAlpha = tickAlpha
       drawTicks(
-        ctx, layout, palette,
-        opts.min, opts.max,
-        opts.tickCount, opts.showTickLabels,
+        ctx,
+        layout,
+        palette,
+        opts.min,
+        opts.max,
+        opts.tickCount,
+        opts.showTickLabels,
         opts.formatValue,
       )
       ctx.restore()
@@ -141,7 +147,9 @@ export function drawGaugeFrame(
     ctx.globalAlpha = needleAlpha
     if (opts.pointer === 'circle') {
       drawCirclePointer(
-        ctx, layout, palette,
+        ctx,
+        layout,
+        palette,
         opts.valueAngle,
         opts.momentum,
         opts.momentumGlowAlpha,
@@ -150,7 +158,9 @@ export function drawGaugeFrame(
       )
     } else {
       drawNeedle(
-        ctx, layout, palette,
+        ctx,
+        layout,
+        palette,
         opts.valueAngle,
         opts.momentum,
         opts.momentumGlowAlpha,
@@ -179,8 +189,14 @@ export function drawGaugeFrame(
     // 8. Particles (degen mode)
     if (opts.particleState && reveal > 0.9) {
       const burstIntensity = spawnOnSwing(
-        opts.particleState, opts.momentum, tipX, tipY,
-        opts.swingMagnitude, palette.accent, opts.dt, opts.particleOptions,
+        opts.particleState,
+        opts.momentum,
+        tipX,
+        tipY,
+        opts.swingMagnitude,
+        palette.accent,
+        opts.dt,
+        opts.particleOptions,
       )
       if (burstIntensity > 0 && shake) {
         shake.amplitude = (3 + opts.swingMagnitude * 4) * burstIntensity

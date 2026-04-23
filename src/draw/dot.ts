@@ -1,4 +1,4 @@
-import type { GaugePalette, Momentum } from '../types'
+import type { GaugePalette, Momentum } from '@/types'
 
 const PULSE_INTERVAL = 1500
 const PULSE_DURATION = 900
@@ -15,12 +15,10 @@ export function drawDot(
 ): void {
   const baseAlpha = ctx.globalAlpha
 
-  const dotColor = momentum === 'up' ? palette.dotUp
-    : momentum === 'down' ? palette.dotDown
-    : palette.dotFlat
-  const glowColor = momentum === 'up' ? palette.glowUp
-    : momentum === 'down' ? palette.glowDown
-    : palette.glowFlat
+  const dotColor =
+    momentum === 'up' ? palette.dotUp : momentum === 'down' ? palette.dotDown : palette.dotFlat
+  const glowColor =
+    momentum === 'up' ? palette.glowUp : momentum === 'down' ? palette.glowDown : palette.glowFlat
 
   // Expanding ring pulse
   if (pulse) {

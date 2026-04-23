@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { lerp } from '../lerp'
 
 describe('lerp', () => {
@@ -25,7 +25,9 @@ describe('lerp', () => {
 
   it('converges after many frames', () => {
     let v = 0
-    for (let i = 0; i < 200; i++) v = lerp(v, 100, 0.08, 16.67)
+    for (let i = 0; i < 200; i++) {
+      v = lerp(v, 100, 0.08, 16.67)
+    }
     expect(v).toBeCloseTo(100, 1)
   })
 })
