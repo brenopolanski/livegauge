@@ -2,6 +2,8 @@
 
 Real-time animated gauge chart for React. Canvas-rendered, 60fps, zero CSS imports.
 
+![Livegauge demo](./.github/demo.mp4)
+
 > _Inspired by the [Liveline](https://github.com/benjitaylor/liveline) project by [@benjitaylor](https://github.com/benjitaylor)._
 
 ## Install
