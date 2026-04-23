@@ -7,7 +7,7 @@ Real-time animated gauge chart for React. Canvas-rendered, 60fps, zero CSS impor
 ## Install
 
 ```bash
-pnpm add livegauge
+npm i livegauge
 ```
 
 Peer dependency: `react >=18`.
